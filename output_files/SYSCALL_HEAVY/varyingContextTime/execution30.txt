@@ -1,0 +1,100 @@
+0, 50, CPU processing
+50, 1, switch to kernel mode
+51, 30, context saved
+81, 1, find vector 20 in memory position 0x0028
+82, 1, load address 0X07B7 into the PC
+83, 40, running ISR from system call software interrupt
+123, 30, running IRET (restoring context)
+163, 30, CPU processing
+193, 1, switch to kernel mode
+194, 30, context saved
+224, 1, find vector 22 in memory position 0x002C
+225, 1, load address 0X03B7 into the PC
+226, 40, running ISR from system call software interrupt
+266, 30, running IRET (restoring context)
+306, 1, switch to kernel mode
+307, 30, context saved
+337, 1, find vector 21 in memory position 0x002A
+338, 1, load address 0X0523 into the PC
+339, 40, running ISR from system call software interrupt
+379, 30, running IRET (restoring context)
+419, 40, CPU processing
+459, 1, switch to kernel mode
+460, 30, context saved
+490, 1, find vector 25 in memory position 0x0032
+491, 1, load address 0X05D3 into the PC
+492, 40, running ISR from system call software interrupt
+532, 30, running IRET (restoring context)
+572, 25, CPU processing
+597, 1, switch to kernel mode
+598, 30, context saved
+628, 1, find vector 24 in memory position 0x0030
+629, 1, load address 0X05E8 into the PC
+630, 40, running ISR from system call software interrupt
+670, 30, running IRET (restoring context)
+710, 1, switch to kernel mode
+711, 30, context saved
+741, 1, find vector 20 in memory position 0x0028
+742, 1, load address 0X07B7 into the PC
+743, 40, running ISR from system call software interrupt
+783, 30, running IRET (restoring context)
+823, 60, CPU processing
+883, 1, switch to kernel mode
+884, 30, context saved
+914, 1, find vector 23 in memory position 0x002E
+915, 1, load address 0X028C into the PC
+916, 40, running ISR from system call software interrupt
+956, 30, running IRET (restoring context)
+996, 35, CPU processing
+1031, 1, switch to kernel mode
+1032, 30, context saved
+1062, 1, find vector 25 in memory position 0x0032
+1063, 1, load address 0X05D3 into the PC
+1064, 40, running ISR from system call software interrupt
+1104, 30, running IRET (restoring context)
+1144, 1, switch to kernel mode
+1145, 30, context saved
+1175, 1, find vector 22 in memory position 0x002C
+1176, 1, load address 0X03B7 into the PC
+1177, 40, running ISR from system call software interrupt
+1217, 30, running IRET (restoring context)
+1257, 45, CPU processing
+1302, 1, switch to kernel mode
+1303, 30, context saved
+1333, 1, find vector 21 in memory position 0x002A
+1334, 1, load address 0X0523 into the PC
+1335, 40, running ISR from system call software interrupt
+1375, 30, running IRET (restoring context)
+1415, 20, CPU processing
+1435, 1, switch to kernel mode
+1436, 30, context saved
+1466, 1, find vector 24 in memory position 0x0030
+1467, 1, load address 0X05E8 into the PC
+1468, 40, running ISR from system call software interrupt
+1508, 30, running IRET (restoring context)
+1548, 1, switch to kernel mode
+1549, 30, context saved
+1579, 1, find vector 23 in memory position 0x002E
+1580, 1, load address 0X028C into the PC
+1581, 40, running ISR from system call software interrupt
+1621, 30, running IRET (restoring context)
+1661, 55, CPU processing
+1716, 1, switch to kernel mode
+1717, 30, context saved
+1747, 1, find vector 25 in memory position 0x0032
+1748, 1, load address 0X05D3 into the PC
+1749, 40, running ISR from system call software interrupt
+1789, 30, running IRET (restoring context)
+1829, 30, CPU processing
+1859, 1, switch to kernel mode
+1860, 30, context saved
+1890, 1, find vector 20 in memory position 0x0028
+1891, 1, load address 0X07B7 into the PC
+1892, 40, running ISR from system call software interrupt
+1932, 30, running IRET (restoring context)
+1972, 1, switch to kernel mode
+1973, 30, context saved
+2003, 1, find vector 22 in memory position 0x002C
+2004, 1, load address 0X03B7 into the PC
+2005, 40, running ISR from system call software interrupt
+2045, 30, running IRET (restoring context)

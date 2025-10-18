@@ -1,0 +1,103 @@
+0, 30, CPU processing
+30, 1, switch to kernel mode
+31, 20, context saved
+51, 1, find vector 0 in memory position 0x0000
+52, 1, load address 0X01E3 into the PC
+53, 40, running I/O device specific ISR (driver) due to hardware interrupt
+93, 110, IO device busy: CPU polling...I/O device finished, resuming
+203, 20, running IRET (restoring context)
+243, 1, ending I/O for device 0
+244, 20, CPU processing
+264, 1, switch to kernel mode
+265, 20, context saved
+285, 1, find vector 3 in memory position 0x0006
+286, 1, load address 0X042B into the PC
+287, 40, running I/O device specific ISR (driver) due to hardware interrupt
+327, 300, IO device busy: CPU polling......I/O device finished, resuming
+627, 20, running IRET (restoring context)
+667, 1, ending I/O for device 3
+668, 1, switch to kernel mode
+669, 20, context saved
+689, 1, find vector 7 in memory position 0x000E
+690, 1, load address 0X00BD into the PC
+691, 40, running I/O device specific ISR (driver) due to hardware interrupt
+731, 152, IO device busy: CPU polling...I/O device finished, resuming
+883, 20, running IRET (restoring context)
+923, 1, ending I/O for device 7
+924, 15, CPU processing
+939, 1, switch to kernel mode
+940, 20, context saved
+960, 1, find vector 11 in memory position 0x0016
+961, 1, load address 0X01F8 into the PC
+962, 40, running I/O device specific ISR (driver) due to hardware interrupt
+1002, 523, IO device busy: CPU polling..........I/O device finished, resuming
+1525, 20, running IRET (restoring context)
+1565, 1, ending I/O for device 11
+1566, 1, switch to kernel mode
+1567, 20, context saved
+1587, 1, find vector 14 in memory position 0x001C
+1588, 1, load address 0X0165 into the PC
+1589, 40, running I/O device specific ISR (driver) due to hardware interrupt
+1629, 456, IO device busy: CPU polling.........I/O device finished, resuming
+2085, 20, running IRET (restoring context)
+2125, 1, ending I/O for device 14
+2126, 25, CPU processing
+2151, 1, switch to kernel mode
+2152, 20, context saved
+2172, 1, find vector 18 in memory position 0x0024
+2173, 1, load address 0X060A into the PC
+2174, 40, running I/O device specific ISR (driver) due to hardware interrupt
+2214, 123, IO device busy: CPU polling...I/O device finished, resuming
+2337, 20, running IRET (restoring context)
+2377, 1, ending I/O for device 18
+2378, 1, switch to kernel mode
+2379, 20, context saved
+2399, 1, find vector 2 in memory position 0x0004
+2400, 1, load address 0X0695 into the PC
+2401, 40, running I/O device specific ISR (driver) due to hardware interrupt
+2441, 150, IO device busy: CPU polling...I/O device finished, resuming
+2591, 20, running IRET (restoring context)
+2631, 1, ending I/O for device 2
+2632, 10, CPU processing
+2642, 1, switch to kernel mode
+2643, 20, context saved
+2663, 1, find vector 6 in memory position 0x000C
+2664, 1, load address 0X0639 into the PC
+2665, 40, running I/O device specific ISR (driver) due to hardware interrupt
+2705, 265, IO device busy: CPU polling.....I/O device finished, resuming
+2970, 20, running IRET (restoring context)
+3010, 1, ending I/O for device 6
+3011, 1, switch to kernel mode
+3012, 20, context saved
+3032, 1, find vector 19 in memory position 0x0026
+3033, 1, load address 0X0765 into the PC
+3034, 40, running I/O device specific ISR (driver) due to hardware interrupt
+3074, 652, IO device busy: CPU polling.............I/O device finished, resuming
+3726, 20, running IRET (restoring context)
+3766, 1, ending I/O for device 19
+3767, 35, CPU processing
+3802, 1, switch to kernel mode
+3803, 20, context saved
+3823, 1, find vector 9 in memory position 0x0012
+3824, 1, load address 0X036C into the PC
+3825, 40, running I/O device specific ISR (driver) due to hardware interrupt
+3865, 156, IO device busy: CPU polling...I/O device finished, resuming
+4021, 20, running IRET (restoring context)
+4061, 1, ending I/O for device 9
+4062, 1, switch to kernel mode
+4063, 20, context saved
+4083, 1, find vector 16 in memory position 0x0020
+4084, 1, load address 0X02DF into the PC
+4085, 40, running I/O device specific ISR (driver) due to hardware interrupt
+4125, 956, IO device busy: CPU polling...................I/O device finished, resuming
+5081, 20, running IRET (restoring context)
+5121, 1, ending I/O for device 16
+5122, 20, CPU processing
+5142, 1, switch to kernel mode
+5143, 20, context saved
+5163, 1, find vector 4 in memory position 0x0008
+5164, 1, load address 0X0292 into the PC
+5165, 40, running I/O device specific ISR (driver) due to hardware interrupt
+5205, 250, IO device busy: CPU polling.....I/O device finished, resuming
+5455, 20, running IRET (restoring context)
+5495, 1, ending I/O for device 4

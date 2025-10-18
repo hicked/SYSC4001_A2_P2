@@ -3,4 +3,8 @@ if [ ! -d "bin" ]; then
 else
 	rm bin/*
 fi
-g++ -g -O0 -I . -o bin/interrupts interrupts.cpp
+if [[ $1 == *--mac* ]]; then
+    g++ -g -std=c++17 -O0 -I . -o bin/interrupts interrupts.cpp
+else 
+    g++ -g -O0 -I . -o bin/interrupts interrupts.cpp
+fi
