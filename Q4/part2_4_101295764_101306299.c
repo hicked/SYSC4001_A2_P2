@@ -8,12 +8,14 @@
 #define ITER 100
 
 
-int main() {
-    //int mult = 3;
-    //volatile int i = 0;
 
+int main() {
     int shmid = shmget(IPC_PRIVATE, sizeof(int) * 2, 0666);
     printf("parent shmid: %d\n", shmid);
+    if (shmid < 0) {
+        perror("shmget err");
+        return 1;
+    }
 
     char buffer[16];
     sprintf(buffer, "%d", shmid);
@@ -21,12 +23,12 @@ int main() {
     pid_t pid = fork();
 
     if (pid < 0) {
-       fprintf(stderr, "Fork failed");
+       //fprintf(stderr, "Fork failed");
+       perror("fork err");
        return 1;
     }
     else if (pid == 0) { //child (process 2)
         execl("./pro2", buffer, NULL);
-        //execl("./pro2", NULL);
     }
     else { //parent (process 1)
         int *vars = shmat(shmid, NULL, 0666);
@@ -39,11 +41,20 @@ int main() {
             }
             usleep(WAIT);
         }
-        /*
+        
         int status;
         pid = wait(&status);
         printf("process 2 ending, child pid = %d, status = %d\n", (int) pid, status);
-        */
+        
+        if (shmdt(vars) == -1) {
+            perror("shmdt err");
+            return 1;
+        }
+        
+        if (shmctl(shmid, IPC_RMID, 0) == -1) {
+            perror("shmctl err");
+            return 1;
+        }
         printf("process 1 ending\n");
     }
 
