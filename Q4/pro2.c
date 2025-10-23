@@ -7,8 +7,11 @@
 
 int main(int argc, char *argv[]) {
     printf("sheeeeep\n");
-    
-    int *vars = (int*) shmat(*((int *) argv[0]), NULL, 0666);
+    //printf("child shmid: %d\n", ((int*) argv)[1]);
+    printf("%s\n", argv[0]);
+    printf("int %d\n", atoi(argv[0]));
+  
+    int *vars = (int*) shmat(atoi(argv[0]), NULL, 0666);
     printf("sheeeeep2\n");
     while (1) {
         printf("sheeeeep3\n");

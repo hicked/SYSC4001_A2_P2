@@ -13,8 +13,10 @@ int main() {
     //volatile int i = 0;
 
     int shmid = shmget(IPC_PRIVATE, sizeof(int) * 2, 0666);
+    printf("parent shmid: %d\n", shmid);
 
-
+    char buffer[16];
+    sprintf(buffer, "%d", shmid);
      
     pid_t pid = fork();
 
@@ -23,7 +25,7 @@ int main() {
        return 1;
     }
     else if (pid == 0) { //child (process 2)
-        execl("./pro2", (char *) &shmid, NULL);
+        execl("./pro2", buffer, NULL);
         //execl("./pro2", NULL);
     }
     else { //parent (process 1)
