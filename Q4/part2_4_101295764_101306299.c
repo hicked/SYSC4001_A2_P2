@@ -36,9 +36,12 @@ int main() {
         vars[1] = 0;
 
         for(; vars[1] <= 500; vars[1]++) {
-            if (vars[1] % 3 == 0) {
-                printf("p1: %d\n", vars[1]);
+            if (vars[1] % vars[0] == 0) {
+                printf("Process 1 (Parent, PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);
+            } else {
+                printf("Process 1 (Parent, PID: %d), Cycle number: %d\n", getpid(), vars[1]);
             }
+            
             usleep(WAIT);
         }
         
