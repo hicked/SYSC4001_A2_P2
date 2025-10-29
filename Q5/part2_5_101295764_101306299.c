@@ -117,14 +117,15 @@ int main() {
                 printf("Process 1 (Parent, PID: %d), Cycle number: %d\n", getpid(), vars[1]);
             }
 
+            vars[1]++;
+
+
             //set semval to zero
             if (semctl(semid, 0, SETVAL, 0) < 0) {
                 perror("semctl err");
                 return 1;
             }
-            
-            vars[1]++;
-            //usleep(WAIT);
+            usleep(WAIT);
         }
         
         int status;
