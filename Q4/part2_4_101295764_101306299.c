@@ -20,6 +20,23 @@ int main() {
     char buffer[16];
     sprintf(buffer, "%d", shmid);
      
+
+    int *vars = shmat(shmid, NULL, 0666);
+    vars[0] = 3;
+    vars[1] = 0;
+
+    for(; vars[1] <= 100; vars[1]++) {
+        if (vars[1] % vars[0] == 0) {
+            printf("Process 1 (Parent, PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);
+        } else {
+            printf("Process 1 (Parent, PID: %d), Cycle number: %d\n", getpid(), vars[1]);
+        }
+        
+        usleep(WAIT);
+    }
+        
+
+
     pid_t pid = fork();
 
     if (pid < 0) {
@@ -31,10 +48,6 @@ int main() {
         execl("./pro2", buffer, NULL);
     }
     else { //parent (process 1)
-        int *vars = shmat(shmid, NULL, 0666);
-        vars[0] = 3;
-        vars[1] = 0;
-
         for(; vars[1] <= 500; vars[1]++) {
             if (vars[1] % vars[0] == 0) {
                 printf("Process 1 (Parent, PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);

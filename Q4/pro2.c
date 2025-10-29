@@ -11,16 +11,13 @@ int main(int argc, char *argv[]) {
   
     int *vars = (int*) shmat(atoi(argv[0]), NULL, 0666);
     int prev = -1;
-    while (vars[1] < 500) {
-        if (vars[1] > 100 && prev != vars[1]) {
+    while (vars[1] <= 500) {
+        if (prev != vars[1]) {
             if (vars[1] % vars[0] == 0) {
-                printf("Process 2 (Child, PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);
+                printf("Process 2 (Child,  PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);
             } else {
-                printf("Process 2 (Child, PID: %d), Cycle number: %d\n", getpid(), vars[1]);
+                printf("Process 2 (Child,  PID: %d), Cycle number: %d\n", getpid(), vars[1]);
             }
-
-
-
             prev = vars[1];
         }
 
