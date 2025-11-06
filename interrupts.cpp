@@ -12,6 +12,23 @@
 
 #include<interrupts.hpp>
 
+// Helper to print a compact view of the wait queue (processes waiting for memory)
+static std::string print_wait_queue(const std::vector<PCB>& wait_queue) {
+    std::stringstream buf;
+    buf << "wait queue (" << wait_queue.size() << "):\n";
+    if (wait_queue.empty()) {
+        buf << "(empty)\n\n";
+        return buf.str();
+    }
+    for (const auto &p : wait_queue) {
+        buf << "  - PID " << p.PID
+            << ": " << p.program_name
+            << " (" << p.size << "MB, partition " << p.partition_number << ")\n";
+    }
+    buf << "\n";
+    return buf.str();
+}
+
 std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string> trace_file, int time, std::vector<std::string> vectors, std::vector<int> delays, std::vector<external_file> external_files, PCB current, std::vector<PCB> wait_queue) {
 
     std::string trace;      //!< string to store single line of trace file
@@ -121,6 +138,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             display_wait.push_back(current); // parent is waiting while child runs
             system_status += print_PCB(child, display_wait);
             system_status += "\n";
+            // Also show the global wait queue explicitly
+            system_status += print_wait_queue(wait_queue);
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -168,7 +187,6 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             // With the child's trace, run the child (recursively). Start at the current time.
             // Pass a wait queue that includes the parent so snapshots inside the child show parent waiting
             std::vector<PCB> wait_queue_for_child = wait_queue;
-            wait_queue_for_child.push_back(current);
             auto [child_execution, child_status, child_end_time] = simulate_trace(
                 child_trace,
                 current_time,
@@ -176,7 +194,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 delays,
                 external_files,
                 child,
-                wait_queue_for_child
+                wait_queue
             );
 
             // Append child's output to overall execution log
@@ -213,13 +231,13 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + " (FAILED: not found)\n";
                 system_status += print_PCB(current, wait_queue);
                 system_status += "\n";
-                continue; // proceed with rest of trace
+                system_status += print_wait_queue(wait_queue);
+                break; // proceed with rest of trace
             }
 
             // Free current partition
-            if (current.partition_number != -1) {
-                free_memory(&current);
-            }
+            free_memory(&current);
+
             // Update PCB with new program info
             current.program_name = exec_program_name;
             current.size = new_prog_size;
@@ -235,6 +253,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + " (FAILED: no partition)\n";
                 system_status += print_PCB(current, wait_queue);
                 system_status += "\n";
+                system_status += print_wait_queue(wait_queue);
 
                 continue;
             }
@@ -259,6 +278,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + "\n";
             system_status += print_PCB(current, wait_queue);
             system_status += "\n";
+            system_status += print_wait_queue(wait_queue);
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -287,17 +307,16 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
-            // SUPPOSED TO BE BREAK???????????
-            continue; // allow subsequent activities / EXECs in the trace
-            // otherwise frees?
+            break; //Why is this important? (answer in report)
+            // No need to free, already did it above when we modified the PCB
+            // Need break since the current trace was replaced with whatever was in exec
 
         } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
             // Skip these control flow markers in the main trace loop
             // They are only processed inside the FORK collection logic
             continue;
 
-        }
-        else {
+        } else {
             // break early instead of continuing
             execution += createOutputString(current_time, 1, "ERROR: INVALID ACTIVITY. ENDING SIMULATION");
             current_time += 1;
@@ -307,16 +326,14 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
     free_memory(&current); // releasing allocated memory
 
     // see if anything in the queue
-    // Not sure how to do this yet
-    // for (auto it = wait_queue.begin(); it != wait_queue.end(); ) {
-    //     if (allocate_memory(&*it)) {
-    //         execution += createOutputString(current_time, 1, "allocated waiting process PID " + std::to_string(it->PID));
-
-    //         it = wait_queue.erase(it);
-    //     } else {
-    //         it++;
+    // for (int i = 0; i<wait_queue.size(); i++) {
+    //     if (allocate_memory(&wait_queue[i])) {
+    //         // allocate the memory,
+    //         // run the new trace associated with the process
+    //         // remove from wait queue
     //     }
     // }
+
     return {execution, system_status, current_time};
 }
 

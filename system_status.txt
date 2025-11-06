@@ -6,13 +6,18 @@ time: 562; current trace: FORK, 30
 |   0 |        init |               6 |    1 | waiting |
 +------------------------------------------------------+
 
+wait queue (0):
+(empty)
+
 time: 1808; current trace: EXEC program1, 35
 +------------------------------------------------------+
 | PID |program name |partition number | size |   state |
 +------------------------------------------------------+
 |   1 |    program1 |               4 |   10 | running |
-|   0 |        init |               6 |    1 | waiting |
 +------------------------------------------------------+
+
+wait queue (0):
+(empty)
 
 time: 2364; current trace: EXEC program2, 40
 +------------------------------------------------------+
@@ -21,49 +26,6 @@ time: 2364; current trace: EXEC program2, 40
 |   0 |    program2 |               3 |   15 | running |
 +------------------------------------------------------+
 
-time: 2754; current trace: FORK, 28
-+------------------------------------------------------+
-| PID |program name |partition number | size |   state |
-+------------------------------------------------------+
-|   1 |    program2 |               3 |   15 | running |
-|   0 |    program2 |               3 |   15 | waiting |
-+------------------------------------------------------+
-
-time: 3307; current trace: EXEC program2, 42
-+------------------------------------------------------+
-| PID |program name |partition number | size |   state |
-+------------------------------------------------------+
-|   1 |    program2 |               3 |   15 | running |
-|   0 |    program2 |               3 |   15 | waiting |
-+------------------------------------------------------+
-
-time: 3764; current trace: EXEC program3, 38
-+------------------------------------------------------+
-| PID |program name |partition number | size |   state |
-+------------------------------------------------------+
-|   0 |    program3 |               5 |    5 | running |
-+------------------------------------------------------+
-
-time: 4395; current trace: FORK, 32
-+------------------------------------------------------+
-| PID |program name |partition number | size |   state |
-+------------------------------------------------------+
-|   1 |    program3 |               5 |    5 | running |
-|   0 |    program3 |               5 |    5 | waiting |
-+------------------------------------------------------+
-
-time: 5218; current trace: EXEC program2, 42
-+------------------------------------------------------+
-| PID |program name |partition number | size |   state |
-+------------------------------------------------------+
-|   1 |    program2 |               3 |   15 | running |
-|   0 |    program3 |               5 |    5 | waiting |
-+------------------------------------------------------+
-
-time: 5765; current trace: EXEC program3, 36
-+------------------------------------------------------+
-| PID |program name |partition number | size |   state |
-+------------------------------------------------------+
-|   0 |    program3 |               5 |    5 | running |
-+------------------------------------------------------+
+wait queue (0):
+(empty)
 
