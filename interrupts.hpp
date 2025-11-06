@@ -16,11 +16,11 @@
 #define VECTOR_SIZE 2
 
 /* we will have 6 partitions:
-    1- 40 Mb  
-    2- 25 Mb  
-    3- 15 Mb  
-    4- 10 Mb  
-    5- 8 Mb  
+    1- 40 Mb
+    2- 25 Mb
+    3- 15 Mb
+    4- 10 Mb
+    5- 8 Mb
     6- 2 Mb
 */
 
@@ -52,7 +52,7 @@ struct PCB{
 
     // Parent PID (for fork) -1 no parent
     int             PPID;
-    
+
     // parent.stuff
     std::string     program_name;
     unsigned int    size;
@@ -113,15 +113,15 @@ std::vector<std::string> split_delim(std::string input, std::string delim) {
 /**
  * \brief parse the CLI arguments
  *
- * This helper function parses command line arguments and checks for errors 
- * 
+ * This helper function parses command line arguments and checks for errors
+ *
  * @param argc number of command line arguments
  * @param argv the command line arguments
  * @return a vector of strings (the parsed vector table), a vector of delays, a vector of external files
- * 
+ *
  */
 std::tuple<std::vector<std::string>, std::vector<int>, std::vector<external_file>>parse_args(int argc, char** argv) {
-    /* 
+    /*
         argv[0]: program name (./interrupts)
         argv[1]: trace file path (e.g. input_files/trace_cpu_heavy.txt)
         argv[2]: vector table path (e.g. vector_table.txt)
@@ -196,7 +196,13 @@ std::tuple<std::vector<std::string>, std::vector<int>, std::vector<external_file
 std::tuple<std::string, int, std::string> parse_trace(std::string trace) {
     //split line by ','
     auto parts = split_delim(trace, ",");
+
+    // Handle control flow markers that don't have commas
     if (parts.size() < 2) {
+        std::string activity = parts[0];
+        if (activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
+            return {activity, 0, "null"};
+        }
         std::cerr << "Error: Malformed input line: " << trace << std::endl;
         return {"null", -1, "null"};
     }
@@ -224,12 +230,12 @@ std::pair<std::string, int> intr_boilerplate(int current_time, int intr_num, int
 
     execution += std::to_string(current_time) + ", " + std::to_string(context_save_time) + ", context saved\n";
     current_time += context_save_time;
-    
+
     char vector_address_c[10];
     sprintf(vector_address_c, "0x%04X", (ADDR_BASE + (intr_num * VECTOR_SIZE)));
     std::string vector_address(vector_address_c);
 
-    execution += std::to_string(current_time) + ", " + std::to_string(1) + ", find vector " + std::to_string(intr_num) 
+    execution += std::to_string(current_time) + ", " + std::to_string(1) + ", find vector " + std::to_string(intr_num)
                     + " in memory position " + vector_address + "\n";
     current_time++;
 
@@ -259,20 +265,20 @@ void print_external_files(std::vector<external_file> files) {
     const int tableWidth = 24;
 
     std::cout << "List of external files (" << files.size() << " entry(s)): " << std::endl;
-    
+
     // Print top border
     std::cout << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
-    
+
     // Print headers
     std::cout << "|"
               << std::setfill(' ') << std::setw(10) << "file name"
               << std::setw(2) << "|"
               << std::setfill(' ') << std::setw(10) << "files size"
               << std::setw(2) << "|" << std::endl;
-    
+
     // Print separator
     std::cout << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
-    
+
     // Print each PCB entry
     for (const auto& file : files) {
         std::cout << "|"
@@ -281,7 +287,7 @@ void print_external_files(std::vector<external_file> files) {
                   << std::setw(10) << file.size
                   << std::setw(2) << "|" << std::endl;
     }
-    
+
     // Print bottom border
     std::cout << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
 }
@@ -292,10 +298,10 @@ std::string print_PCB(PCB current, std::vector<PCB> _PCB) {
     const int tableWidth = 55;
 
     std::stringstream buffer;
-    
+
     // Print top border
     buffer << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
-    
+
     // Print headers
     buffer << "|"
               << std::setfill(' ') << std::setw(4) << "PID"
@@ -305,10 +311,10 @@ std::string print_PCB(PCB current, std::vector<PCB> _PCB) {
               << std::setfill(' ') << std::setw(16) << "partition number"
               << std::setw(2) << "|"
               << std::setfill(' ') << std::setw(5) << "size"
-              << std::setw(2) << "|" 
+              << std::setw(2) << "|"
               << std::setfill(' ') << std::setw(8) << "state"
               << std::setw(2) << "|" << std::endl;
-    
+
     // Print separator
     buffer << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
 
@@ -323,7 +329,7 @@ std::string print_PCB(PCB current, std::vector<PCB> _PCB) {
                   << std::setw(2) << "|"
                   << std::setw(8) << "running"
                   << std::setw(2) << "|" << std::endl;
-    
+
     // Print each PCB entry
     for (const auto& program : _PCB) {
         buffer << "|"
@@ -338,7 +344,7 @@ std::string print_PCB(PCB current, std::vector<PCB> _PCB) {
                   << std::setw(8) << "waiting"
                   << std::setw(2) << "|" << std::endl;
     }
-    
+
     // Print bottom border
     buffer << "+" << std::setfill('-') << std::setw(tableWidth) << "+" << std::endl;
 
@@ -350,7 +356,7 @@ std::string print_PCB(PCB current, std::vector<PCB> _PCB) {
 unsigned int get_size(std::string name, std::vector<external_file> external_files) {
     int size = -1;
 
-    for (auto file : external_files) { 
+    for (auto file : external_files) {
         if(file.program_name == name){
             size = file.size;
             break;
@@ -360,5 +366,9 @@ unsigned int get_size(std::string name, std::vector<external_file> external_file
     // Couldn't find the external file
     return size;
 }
+
+std::string createOutputString( unsigned long totalTime,
+                                int delay,
+                                std::string msg);
 
 #endif

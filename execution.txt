@@ -1,100 +1,92 @@
-0, 50, CPU processing
-50, 1, switch to kernel mode
-51, 10, context saved
-61, 1, find vector 20 in memory position 0x00A0
-62, 1, load address 0X07B7 into the PC
-63, 40, running ISR from system call software interrupt
-103, 10, running IRET (restoring context)
-143, 30, CPU processing
-173, 1, switch to kernel mode
-174, 10, context saved
-184, 1, find vector 22 in memory position 0x00B0
-185, 1, load address 0X03B7 into the PC
-186, 40, running ISR from system call software interrupt
-226, 10, running IRET (restoring context)
-266, 1, switch to kernel mode
-267, 10, context saved
-277, 1, find vector 21 in memory position 0x00A8
-278, 1, load address 0X0523 into the PC
-279, 40, running ISR from system call software interrupt
-319, 10, running IRET (restoring context)
-359, 40, CPU processing
-399, 1, switch to kernel mode
-400, 10, context saved
-410, 1, find vector 25 in memory position 0x00C8
-411, 1, load address 0X05D3 into the PC
-412, 40, running ISR from system call software interrupt
-452, 10, running IRET (restoring context)
-492, 25, CPU processing
-517, 1, switch to kernel mode
-518, 10, context saved
-528, 1, find vector 24 in memory position 0x00C0
-529, 1, load address 0X05E8 into the PC
-530, 40, running ISR from system call software interrupt
-570, 10, running IRET (restoring context)
-610, 1, switch to kernel mode
-611, 10, context saved
-621, 1, find vector 20 in memory position 0x00A0
-622, 1, load address 0X07B7 into the PC
-623, 40, running ISR from system call software interrupt
-663, 10, running IRET (restoring context)
-703, 60, CPU processing
-763, 1, switch to kernel mode
-764, 10, context saved
-774, 1, find vector 23 in memory position 0x00B8
-775, 1, load address 0X028C into the PC
-776, 40, running ISR from system call software interrupt
-816, 10, running IRET (restoring context)
-856, 35, CPU processing
-891, 1, switch to kernel mode
-892, 10, context saved
-902, 1, find vector 25 in memory position 0x00C8
-903, 1, load address 0X05D3 into the PC
-904, 40, running ISR from system call software interrupt
-944, 10, running IRET (restoring context)
-984, 1, switch to kernel mode
-985, 10, context saved
-995, 1, find vector 22 in memory position 0x00B0
-996, 1, load address 0X03B7 into the PC
-997, 40, running ISR from system call software interrupt
-1037, 10, running IRET (restoring context)
-1077, 45, CPU processing
-1122, 1, switch to kernel mode
-1123, 10, context saved
-1133, 1, find vector 21 in memory position 0x00A8
-1134, 1, load address 0X0523 into the PC
-1135, 40, running ISR from system call software interrupt
-1175, 10, running IRET (restoring context)
-1215, 20, CPU processing
-1235, 1, switch to kernel mode
-1236, 10, context saved
-1246, 1, find vector 24 in memory position 0x00C0
-1247, 1, load address 0X05E8 into the PC
-1248, 40, running ISR from system call software interrupt
-1288, 10, running IRET (restoring context)
-1328, 1, switch to kernel mode
-1329, 10, context saved
-1339, 1, find vector 23 in memory position 0x00B8
-1340, 1, load address 0X028C into the PC
-1341, 40, running ISR from system call software interrupt
-1381, 10, running IRET (restoring context)
-1421, 55, CPU processing
-1476, 1, switch to kernel mode
-1477, 10, context saved
-1487, 1, find vector 25 in memory position 0x00C8
-1488, 1, load address 0X05D3 into the PC
-1489, 40, running ISR from system call software interrupt
-1529, 10, running IRET (restoring context)
-1569, 30, CPU processing
-1599, 1, switch to kernel mode
-1600, 10, context saved
-1610, 1, find vector 20 in memory position 0x00A0
-1611, 1, load address 0X07B7 into the PC
-1612, 40, running ISR from system call software interrupt
-1652, 10, running IRET (restoring context)
-1692, 1, switch to kernel mode
-1693, 10, context saved
-1703, 1, find vector 22 in memory position 0x00B0
-1704, 1, load address 0X03B7 into the PC
-1705, 40, running ISR from system call software interrupt
-1745, 10, running IRET (restoring context)
+0, 120, CPU Burst
+120, 1, switch to kernel mode
+121, 10, context saved
+131, 1, find vector 5 in memory position 0x000A
+132, 1, load address 0X048B into the PC
+133, 40, running I/O device specific ISR (driver) due to hardware interrupt
+173, 211, IO device busy: CPU polling....I/O device finished, resuming
+384, 10, running IRET (restoring context)
+394, 1, switch to kernel mode
+395, 10, context saved
+405, 1, find vector 5 in memory position 0x000A
+406, 1, load address 0X048B into the PC
+407, 211, ENDIO ISR(ADD STEPS HERE)
+618, 1, IRET
+619, 80, CPU Burst
+699, 1, switch to kernel mode
+700, 30, context saved
+730, 1, find vector 2 in memory position 0x0004
+731, 1, load address 0X0695 into the PC
+732, 20, running FORK ISR (copying parent PCB to child)
+762, 5, scheduler called
+762, 10, running IRET (restoring context)
+772, 60, CPU Burst
+832, 1, switch to kernel mode
+833, 10, context saved
+843, 1, find vector 8 in memory position 0x0010
+844, 1, load address 0X06EF into the PC
+845, 40, running I/O device specific ISR (driver) due to hardware interrupt
+885, 1000, IO device busy: CPU polling....................I/O device finished, resuming
+1885, 10, running IRET (restoring context)
+1895, 1, switch to kernel mode
+1896, 10, context saved
+1906, 1, find vector 8 in memory position 0x0010
+1907, 1, load address 0X06EF into the PC
+1908, 1000, ENDIO ISR(ADD STEPS HERE)
+2908, 1, IRET
+2909, 50, CPU Burst
+2959, 1, switch to kernel mode
+2960, 35, context saved
+2995, 1, find vector 3 in memory position 0x0006
+2996, 1, load address 0X042B into the PC
+2997, 1, loader: read 1MB from disk and write to memory (1/10)
+2998, 1, loader: read 1MB from disk and write to memory (2/10)
+2999, 1, loader: read 1MB from disk and write to memory (3/10)
+3000, 1, loader: read 1MB from disk and write to memory (4/10)
+3001, 1, loader: read 1MB from disk and write to memory (5/10)
+3002, 1, loader: read 1MB from disk and write to memory (6/10)
+3003, 1, loader: read 1MB from disk and write to memory (7/10)
+3004, 1, loader: read 1MB from disk and write to memory (8/10)
+3005, 1, loader: read 1MB from disk and write to memory (9/10)
+3006, 1, loader: read 1MB from disk and write to memory (10/10)
+3007, 1, loader finished: partition 4 has 0MB free
+3007, 5, scheduler called
+3007, 10, running IRET (restoring context)
+772, 100, CPU Burst
+872, 1, switch to kernel mode
+873, 10, context saved
+883, 1, find vector 12 in memory position 0x0018
+884, 1, load address 0X03B9 into the PC
+885, 40, running I/O device specific ISR (driver) due to hardware interrupt
+925, 145, IO device busy: CPU polling...I/O device finished, resuming
+1070, 10, running IRET (restoring context)
+1080, 1, switch to kernel mode
+1081, 10, context saved
+1091, 1, find vector 12 in memory position 0x0018
+1092, 1, load address 0X03B9 into the PC
+1093, 145, ENDIO ISR(ADD STEPS HERE)
+1238, 1, IRET
+1239, 90, CPU Burst
+1329, 75, CPU Burst
+1404, 1, switch to kernel mode
+1405, 40, context saved
+1445, 1, find vector 3 in memory position 0x0006
+1446, 1, load address 0X042B into the PC
+1447, 1, loader: read 1MB from disk and write to memory (1/15)
+1448, 1, loader: read 1MB from disk and write to memory (2/15)
+1449, 1, loader: read 1MB from disk and write to memory (3/15)
+1450, 1, loader: read 1MB from disk and write to memory (4/15)
+1451, 1, loader: read 1MB from disk and write to memory (5/15)
+1452, 1, loader: read 1MB from disk and write to memory (6/15)
+1453, 1, loader: read 1MB from disk and write to memory (7/15)
+1454, 1, loader: read 1MB from disk and write to memory (8/15)
+1455, 1, loader: read 1MB from disk and write to memory (9/15)
+1456, 1, loader: read 1MB from disk and write to memory (10/15)
+1457, 1, loader: read 1MB from disk and write to memory (11/15)
+1458, 1, loader: read 1MB from disk and write to memory (12/15)
+1459, 1, loader: read 1MB from disk and write to memory (13/15)
+1460, 1, loader: read 1MB from disk and write to memory (14/15)
+1461, 1, loader: read 1MB from disk and write to memory (15/15)
+1462, 1, loader finished: partition 3 has 0MB free
+1462, 5, scheduler called
+1462, 10, running IRET (restoring context)

@@ -3,7 +3,7 @@ if [[ $1 == *--mac* ]]; then
 else
     ./build.sh
 fi
-./bin/interrupts trace.txt vector_table.txt device_table.txt
+./bin/interrupts trace.txt vector_table.txt device_table.txt external_files.txt
 
 if [ $? -ne 0 ]; then
     echo "Command failed!"

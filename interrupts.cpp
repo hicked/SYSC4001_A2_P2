@@ -39,7 +39,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
         } else if(activity == "SYSCALL") { //As per Assignment 1
             if (duration_intr >= vectors.size()) {
-                execution += createOutputString(current_time, 0, "ERROR: INVALID VECTOR TABLE INDEX: The I/O device specific drivers may be corrupted.");
+                execution += createOutputString(current_time, 1, "ERROR: INVALID VECTOR TABLE INDEX: The I/O device specific drivers may be corrupted.");
             }
             else {
                 std::pair<std::string, int> output = intr_boilerplate(current_time, duration_intr, contextSavResTime, vectors);
@@ -69,7 +69,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
                 // IRET (restoring)
                 execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-                current_time += ISRActivityTime;
+                current_time += contextSavResTime;
             }
 
 
@@ -96,7 +96,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             //Add your FORK output here
 
             // Run the FORK ISR (duration provided in trace), copying PCB info to child
-            execution += createOutputString(current_time, duration_intr, "running FORK ISR (copying parent PCB to child)");
+            execution += createOutputString(current_time, 20, "running FORK ISR (copying parent PCB to child)");
             current_time += duration_intr;
 
             // Create child PCB (copy from parent, assign new PID, set PPID)
@@ -107,7 +107,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
 
             // Call scheduler (for now just print a message)
-            execution += createOutputString(current_time, 0, "scheduler called");
+            execution += createOutputString(current_time, 5, "scheduler called");
 
             // Return from ISR (IRET/restoring context)
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
@@ -214,9 +214,9 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 continue;
             }
 
-            // Simulate loader: read+write each MB (10 ms per MB)
+            // Simulate loader: read+write each MB (1 ms per MB to match delay)
             for (int loaded = 1; loaded <= new_prog_size; ++loaded) {
-                execution += createOutputString(current_time, 10, "loader: read 1MB from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
+                execution += createOutputString(current_time, 1, "loader: read 1MB from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
                 current_time += 1;
             }
 
@@ -225,8 +225,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 remaining = static_cast<int>(memory[current.partition_number - 1].size) - new_prog_size;
                 if (remaining < 0) remaining = 0;
             }
-            execution += createOutputString(current_time, 20, "loader finished: partition " + std::to_string(current.partition_number) + " has " + std::to_string(remaining) + "MB free");
-            execution += createOutputString(current_time, 10, "scheduler called");
+            execution += createOutputString(current_time, 1, "loader finished: partition " + std::to_string(current.partition_number) + " has " + std::to_string(remaining) + "MB free");
+            execution += createOutputString(current_time, 5, "scheduler called");
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
             current_time += contextSavResTime;
 
@@ -260,6 +260,11 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             break; //Why is this important? (answer in report)
 
+        } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
+            // Skip these control flow markers in the main trace loop
+            // They are only processed inside the FORK collection logic
+            continue;
+
         }
         else {
             // break early instead of continuing
@@ -271,15 +276,16 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
     free_memory(&current); // releasing allocated memory
 
     // see if anything in the queue
-    for (auto it = wait_queue.begin(); it != wait_queue.end(); ) {
-        if (allocate_memory(&*it)) {
-            execution += createOutputString(current_time, 0, "allocated waiting process PID " + std::to_string(it->PID));
+    // Not sure how to do this yet
+    // for (auto it = wait_queue.begin(); it != wait_queue.end(); ) {
+    //     if (allocate_memory(&*it)) {
+    //         execution += createOutputString(current_time, 1, "allocated waiting process PID " + std::to_string(it->PID));
 
-            it = wait_queue.erase(it);
-        } else {
-            it++;
-        }
-    }
+    //         it = wait_queue.erase(it);
+    //     } else {
+    //         it++;
+    //     }
+    // }
     return {execution, system_status, current_time};
 }
 
