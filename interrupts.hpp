@@ -36,15 +36,23 @@ struct memory_partition_t {
 
 // ENTIRE 100mb of user space
 // Note these are in descending order
+// memory_partition_t memory[] = {
+//     memory_partition_t(1, 40, "empty"),
+//     memory_partition_t(2, 25, "empty"),
+//     memory_partition_t(3, 15, "empty"),
+//     memory_partition_t(4, 10, "empty"),
+//     memory_partition_t(5, 8, "empty"),
+//     memory_partition_t(6, 2, "empty")
+// };
+
 memory_partition_t memory[] = {
     memory_partition_t(1, 40, "empty"),
-    memory_partition_t(2, 25, "empty"),
-    memory_partition_t(3, 15, "empty"),
-    memory_partition_t(4, 10, "empty"),
-    memory_partition_t(5, 8, "empty"),
-    memory_partition_t(6, 2, "empty")
+    memory_partition_t(2, 40, "empty"),
+    memory_partition_t(3, 40, "empty"),
+    memory_partition_t(4, 40, "empty"),
+    memory_partition_t(5, 40, "empty"),
+    memory_partition_t(6, 40, "empty")
 };
-
 // Every process has a PCB
 // Fork I think should create a new PCB for instance
 struct PCB{

@@ -74,12 +74,16 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
 
         } else if(activity == "END_IO") {
-            auto [intr, time] = intr_boilerplate(current_time, duration_intr, 10, vectors);
-            current_time = time;
-            execution += intr;
-
-            execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", ENDIO ISR(ADD STEPS HERE)\n";
-            current_time += delays[duration_intr];
+            // Guard vector and device indices
+            if (duration_intr < delays.size()) {
+                auto [intr, time] = intr_boilerplate(current_time, duration_intr, 10, vectors);
+                current_time = time;
+                execution += intr;
+                execution += createOutputString(current_time, 1, "ending I/O for device " + std::to_string(duration_intr));
+                current_time += 1;
+            } else {
+                execution += createOutputString(current_time, 0, "ERROR: INVALID VECTOR INDEX for END_IO");
+            }
 
             execution +=  std::to_string(current_time) + ", 1, IRET\n";
             current_time += 1;
@@ -100,11 +104,9 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             current_time += duration_intr;
 
             // Create child PCB (copy from parent, assign new PID, set PPID)
-
             // NO NEED TO SEARCH FOR EMPTY PARTITION SINCE IT SHARES WITH PARENT
             // I would double check the fields of the struct tho, not sure if it's right
             PCB child(current.PID+1, current.PID, current.program_name, current.size, current.partition_number);
-
 
             // Call scheduler (for now just print a message)
             execution += createOutputString(current_time, 5, "scheduler called");
@@ -113,21 +115,18 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
             current_time += contextSavResTime;
 
-            // System status snapshot after FORK: child has higher priority, parent waits
-            {
-                system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
-                std::vector<PCB> display_wait = wait_queue;
-                display_wait.push_back(current); // parent is waiting while child runs
-                system_status += print_PCB(child, display_wait);
-                system_status += "\n";
-            }
+            // System status after FORK: child has higher priority, parent waits
+            system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
+            std::vector<PCB> display_wait = wait_queue;
+            display_wait.push_back(current); // parent is waiting while child runs
+            system_status += print_PCB(child, display_wait);
+            system_status += "\n";
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
             //The following loop helps you do 2 things:
             // * Collect the trace of the chile (and only the child, skip parent)
             // * Get the index of where the parent is supposed to start executing from
-
             std::vector<std::string> child_trace;
             bool skip = true; // default to true
             bool exec_flag = false;
@@ -184,6 +183,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += child_execution;
             // Also append child's system status snapshots
             system_status += child_status;
+            // Advance time to when the child finished
+            current_time = child_end_time;
 
 
         } else if(activity == "EXEC") {
@@ -208,7 +209,11 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 execution += createOutputString(current_time, 1, "ERROR: EXEC failed: program not found: " + exec_program_name);
                 execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
                 current_time += contextSavResTime;
-                break; // abort
+                // Snapshot failure
+                system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + " (FAILED: not found)\n";
+                system_status += print_PCB(current, wait_queue);
+                system_status += "\n";
+                continue; // proceed with rest of trace
             }
 
             // Free current partition
@@ -280,11 +285,10 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += exec_execution;
             system_status += exec_status;
 
-
-
             ///////////////////////////////////////////////////////////////////////////////////////////
 
-            break; //Why is this important? (answer in report)
+            // SUPPOSED TO BE BREAK???????????
+            continue; // allow subsequent activities / EXECs in the trace
             // otherwise frees?
 
         } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
