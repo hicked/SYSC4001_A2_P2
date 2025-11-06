@@ -56,6 +56,37 @@ int main() {
         return 1;
     }
     
+
+    while (vars[1] <= 100) {
+        //wait until semval = 0
+        if (semop(semid, &ctl, 1) < 0) {
+            perror("semop err");
+            return 1;
+        }
+        
+        //set semval to nonzero
+        if (semctl(semid, 0, SETVAL, 1) < 0) {
+            perror("semctl err");
+            return 1;
+        }
+
+        if (vars[1] % vars[0] == 0) {
+            printf("Process 1 (Parent, PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);
+        } else {
+            printf("Process 1 (Parent, PID: %d), Cycle number: %d\n", getpid(), vars[1]);
+        }
+
+        vars[1]++;
+        
+        //set semval to zero
+        if (semctl(semid, 0, SETVAL, 0) < 0) {
+            perror("semctl err");
+            return 1;
+        }
+        usleep(WAIT);
+    }
+
+
     pid_t pid = fork();
 
     if (pid < 0) {
@@ -67,36 +98,6 @@ int main() {
         execl("./pro2", shm_str, sem_str, NULL);
     }
     else { //parent (process 1)
-
-        /*
-        for(; vars[1] <= 500; vars[1]++) {
-            //semop(semid, &ctl, sizeof(struct sembuf));
-
-            //wait until semval = 0
-            if (semop(semid, &ctl, 1) < 0) {
-                perror("semop err");
-                return 1;
-            }
-            
-            //set semval to nonzero
-            if (semctl(semid, 0, SETVAL, 1) < 0) {
-                perror("semctl err");
-                return 1;
-            }
-
-            if (vars[1] % vars[0] == 0) {
-                printf("Process 1 (Parent, PID: %d), Cycle number: %d - %d is a multiple of 3\n", getpid(), vars[1], vars[1]);
-            } else {
-                printf("Process 1 (Parent, PID: %d), Cycle number: %d\n", getpid(), vars[1]);
-            }
-
-            //set semval to zero
-            if (semctl(semid, 0, SETVAL, 0) < 0) {
-                perror("semctl err");
-                return 1;
-            }
-            
-            usleep(WAIT);*/
 
         while (vars[1] <= 500) {
             //wait until semval = 0
@@ -118,7 +119,6 @@ int main() {
             }
 
             vars[1]++;
-
 
             //set semval to zero
             if (semctl(semid, 0, SETVAL, 0) < 0) {
