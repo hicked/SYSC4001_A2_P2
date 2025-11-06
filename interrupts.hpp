@@ -15,15 +15,27 @@
 #define ADDR_BASE   0
 #define VECTOR_SIZE 2
 
+/* we will have 6 partitions:
+    1- 40 Mb  
+    2- 25 Mb  
+    3- 15 Mb  
+    4- 10 Mb  
+    5- 8 Mb  
+    6- 2 Mb
+*/
+
 struct memory_partition_t {
     const unsigned int partition_number;
     const unsigned int size;
     std::string code;
 
+    // construct declaration for this struct
     memory_partition_t(unsigned int _pn, unsigned int _s, std::string _c):
         partition_number(_pn), size(_s), code(_c) {}
 };
 
+// ENTIRE 100mb of user space
+// Note these are in descending order
 memory_partition_t memory[] = {
     memory_partition_t(1, 40, "empty"),
     memory_partition_t(2, 25, "empty"),
@@ -33,22 +45,34 @@ memory_partition_t memory[] = {
     memory_partition_t(6, 2, "empty")
 };
 
+// Every process has a PCB
+// Fork I think should create a new PCB for instance
 struct PCB{
     unsigned int    PID;
+
+    // Parent PID (for fork) -1 no parent
     int             PPID;
+    
+    // parent.stuff
     std::string     program_name;
     unsigned int    size;
+
+    // should share the same memory as parent
+    // -1 if none yet
     int             partition_number;
 
     PCB(unsigned int _pid, int _ppid, std::string _pn, unsigned int _size, int _part_num):
         PID(_pid), PPID(_ppid), program_name(_pn), size(_size), partition_number(_part_num) {}
 };
 
+// External program (for exec?)
 struct external_file{
     std::string     program_name;
     unsigned int    size;
 };
 
+
+// BEST FIT?
 //Allocates a program to memory (if there is space)
 //returns true if the allocation was sucessful, false if not.
 bool allocate_memory(PCB* current) {
@@ -64,11 +88,13 @@ bool allocate_memory(PCB* current) {
 }
 
 //frees the memory given PCB.
+// Kill process basically
 void free_memory(PCB* process) {
     memory[process->partition_number - 1].code = "empty";
     process->partition_number = -1;
 }
 
+// splits input by delim
 // Following function was taken from stackoverflow; helper function for splitting strings
 std::vector<std::string> split_delim(std::string input, std::string delim) {
     std::vector<std::string> tokens;
@@ -95,6 +121,13 @@ std::vector<std::string> split_delim(std::string input, std::string delim) {
  * 
  */
 std::tuple<std::vector<std::string>, std::vector<int>, std::vector<external_file>>parse_args(int argc, char** argv) {
+    /* 
+        argv[0]: program name (./interrupts)
+        argv[1]: trace file path (e.g. input_files/trace_cpu_heavy.txt)
+        argv[2]: vector table path (e.g. vector_table.txt)
+        argv[3]: device table path (e.g. device_table.txt)
+        argv[4]: external files path (e.g. "progName,size")
+    */
     if(argc != 5) {
         std::cout << "ERROR!\nExpected 4 argument, received " << argc - 1 << std::endl;
         std::cout << "To run the program, do: ./interrutps <your_trace_file.txt> <your_vector_table.txt> <your_device_table.txt> <your_external_files.txt>" << std::endl;
@@ -324,6 +357,7 @@ unsigned int get_size(std::string name, std::vector<external_file> external_file
         }
     }
 
+    // Couldn't find the external file
     return size;
 }
 
