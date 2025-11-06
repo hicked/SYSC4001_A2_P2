@@ -113,6 +113,15 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
             current_time += contextSavResTime;
 
+            // System status snapshot after FORK: child has higher priority, parent waits
+            {
+                system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
+                std::vector<PCB> display_wait = wait_queue;
+                display_wait.push_back(current); // parent is waiting while child runs
+                system_status += print_PCB(child, display_wait);
+                system_status += "\n";
+            }
+
             ///////////////////////////////////////////////////////////////////////////////////////////
 
             //The following loop helps you do 2 things:
@@ -158,6 +167,9 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             i = parent_index;
 
             // With the child's trace, run the child (recursively). Start at the current time.
+            // Pass a wait queue that includes the parent so snapshots inside the child show parent waiting
+            std::vector<PCB> wait_queue_for_child = wait_queue;
+            wait_queue_for_child.push_back(current);
             auto [child_execution, child_status, child_end_time] = simulate_trace(
                 child_trace,
                 current_time,
@@ -165,11 +177,13 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 delays,
                 external_files,
                 child,
-                wait_queue
+                wait_queue_for_child
             );
 
             // Append child's output to overall execution log
             execution += child_execution;
+            // Also append child's system status snapshots
+            system_status += child_status;
 
 
         } else if(activity == "EXEC") {
@@ -211,6 +225,12 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
                 current_time += contextSavResTime;
                 wait_queue.push_back(current);
+
+                // Snapshot failure to allocate as well
+                system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + " (FAILED: no partition)\n";
+                system_status += print_PCB(current, wait_queue);
+                system_status += "\n";
+
                 continue;
             }
 
@@ -229,6 +249,11 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += createOutputString(current_time, 5, "scheduler called");
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
             current_time += contextSavResTime;
+
+            // System status after EXEC
+            system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + "\n";
+            system_status += print_PCB(current, wait_queue);
+            system_status += "\n";
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -253,12 +278,14 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 wait_queue
             );
             execution += exec_execution;
+            system_status += exec_status;
 
 
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
             break; //Why is this important? (answer in report)
+            // otherwise frees?
 
         } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
             // Skip these control flow markers in the main trace loop
