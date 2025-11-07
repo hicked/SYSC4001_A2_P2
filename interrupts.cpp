@@ -2,6 +2,7 @@
 // 1. WHEN FORK, CHILD WILL USE THE SAME MEMORY AS PARENT (NO NEED TO REALLOCATE, JUST CREATE NEW PCB IN SAME PARTITION)
 // 2. THEIR ALLOCATE IS ONE PROCESS PER PARTITION (UNLESS CALLING FORK)... I DON'T THINK THAT'S HOW IT'S SUPPOSED TO WORK BUT
 // 3. WHEN EXCEC, FIND AN EMPTY PARTITION, IF NOT, ADD TO QUEUE. AGAIN, DOESN'T TRY TO FIND A HOLE IN ANOTHER PARTITION...
+// fix wait queue
 
 /**
  *
@@ -126,7 +127,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             PCB child(current.PID+1, current.PID, current.program_name, current.size, current.partition_number);
 
             // Call scheduler (for now just print a message)
-            execution += createOutputString(current_time, 5, "scheduler called");
+            execution += createOutputString(current_time, 0, "scheduler called");
 
             // Return from ISR (IRET/restoring context)
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
@@ -260,7 +261,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             // Simulate loader: read+write each MB (1 ms per MB to match delay)
             for (int loaded = 1; loaded <= new_prog_size; ++loaded) {
-                execution += createOutputString(current_time, 1, "loader: read 1MB from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
+                execution += createOutputString(current_time, 15, "loader: read 1MB from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
                 current_time += 1;
             }
 
@@ -270,7 +271,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 if (remaining < 0) remaining = 0;
             }
             execution += createOutputString(current_time, 1, "loader finished: partition " + std::to_string(current.partition_number) + " has " + std::to_string(remaining) + "MB free");
-            execution += createOutputString(current_time, 5, "scheduler called");
+            execution += createOutputString(current_time, 0, "scheduler called");
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
             current_time += contextSavResTime;
 

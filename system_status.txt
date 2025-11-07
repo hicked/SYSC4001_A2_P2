@@ -1,4 +1,4 @@
-time: 562; current trace: FORK, 30
+time: 33; current trace: FORK, 10
 +------------------------------------------------------+
 | PID |program name |partition number | size |   state |
 +------------------------------------------------------+
@@ -9,7 +9,7 @@ time: 562; current trace: FORK, 30
 wait queue (0):
 (empty)
 
-time: 1808; current trace: EXEC program1, 35
+time: 106; current trace: EXEC program1, 50
 +------------------------------------------------------+
 | PID |program name |partition number | size |   state |
 +------------------------------------------------------+
@@ -19,7 +19,7 @@ time: 1808; current trace: EXEC program1, 35
 wait queue (0):
 (empty)
 
-time: 2364; current trace: EXEC program2, 40
+time: 159; current trace: EXEC program2, 25
 +------------------------------------------------------+
 | PID |program name |partition number | size |   state |
 +------------------------------------------------------+
