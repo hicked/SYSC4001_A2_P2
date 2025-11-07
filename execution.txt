@@ -2,56 +2,59 @@
 1, 10, context saved
 11, 1, find vector 2 in memory position 0x0004
 12, 1, load address 0X0695 into the PC
-13, 20, running FORK ISR (copying parent PCB to child)
-33, 1, copying parent memory to child partition (1/1 MB)
-34, 0, scheduler called
-34, 10, running IRET (restoring context)
-44, 1, switch to kernel mode
-45, 50, context saved
-95, 1, find vector 3 in memory position 0x0006
-96, 1, load address 0X042B into the PC
-97, 15, loader: read 1MB from disk and write to memory (1/10)
-112, 15, loader: read 1MB from disk and write to memory (2/10)
-127, 15, loader: read 1MB from disk and write to memory (3/10)
-142, 15, loader: read 1MB from disk and write to memory (4/10)
-157, 15, loader: read 1MB from disk and write to memory (5/10)
-172, 15, loader: read 1MB from disk and write to memory (6/10)
-187, 15, loader: read 1MB from disk and write to memory (7/10)
-202, 15, loader: read 1MB from disk and write to memory (8/10)
-217, 15, loader: read 1MB from disk and write to memory (9/10)
-232, 15, loader: read 1MB from disk and write to memory (10/10)
-247, 1, loader finished: partition 4 occupied: Has 0MB free
-248, 0, scheduler called
-248, 10, running IRET (restoring context)
-258, 100, CPU Burst
-258, 0, child finished, resuming parent process (PID 0)
-258, 1, switch to kernel mode
-259, 25, context saved
-284, 1, find vector 3 in memory position 0x0006
-285, 1, load address 0X042B into the PC
-286, 15, loader: read 1MB from disk and write to memory (1/15)
-301, 15, loader: read 1MB from disk and write to memory (2/15)
-316, 15, loader: read 1MB from disk and write to memory (3/15)
-331, 15, loader: read 1MB from disk and write to memory (4/15)
-346, 15, loader: read 1MB from disk and write to memory (5/15)
-361, 15, loader: read 1MB from disk and write to memory (6/15)
-376, 15, loader: read 1MB from disk and write to memory (7/15)
-391, 15, loader: read 1MB from disk and write to memory (8/15)
-406, 15, loader: read 1MB from disk and write to memory (9/15)
-421, 15, loader: read 1MB from disk and write to memory (10/15)
-436, 15, loader: read 1MB from disk and write to memory (11/15)
-451, 15, loader: read 1MB from disk and write to memory (12/15)
-466, 15, loader: read 1MB from disk and write to memory (13/15)
-481, 15, loader: read 1MB from disk and write to memory (14/15)
-496, 15, loader: read 1MB from disk and write to memory (15/15)
-511, 1, loader finished: partition 3 occupied: Has 0MB free
-512, 0, scheduler called
-512, 10, running IRET (restoring context)
-522, 1, switch to kernel mode
-523, 10, context saved
-533, 1, find vector 4 in memory position 0x0008
-534, 1, load address 0X0292 into the PC
-535, 40, running I/O device specific ISR (driver) due to hardware interrupt
-575, 250, IO device busy: CPU polling.....I/O device finished, resuming
-825, 10, running IRET (restoring context)
-835, 0, process (PID 0) terminating
+13, 10, cloning the PCB and loading child into memory (PID: 1)
+23, 0, scheduler called
+23, 1, running IRET (restoring context)
+24, 1, switch to kernel mode
+25, 10, context saved
+35, 1, find vector 3 in memory position 0x0006
+36, 1, load address 0X042B into the PC
+37, 50, program is 10Mb large
+87, 15, loader: read 1Mb from disk and write to memory (1/10)
+102, 15, loader: read 1Mb from disk and write to memory (2/10)
+117, 15, loader: read 1Mb from disk and write to memory (3/10)
+132, 15, loader: read 1Mb from disk and write to memory (4/10)
+147, 15, loader: read 1Mb from disk and write to memory (5/10)
+162, 15, loader: read 1Mb from disk and write to memory (6/10)
+177, 15, loader: read 1Mb from disk and write to memory (7/10)
+192, 15, loader: read 1Mb from disk and write to memory (8/10)
+207, 15, loader: read 1Mb from disk and write to memory (9/10)
+222, 15, loader: read 1Mb from disk and write to memory (10/10)
+237, 3, loader finished: partition 4 occupied: Has 0Mb free
+240, 6, updating PCB
+246, 0, scheduler called
+246, 1, running IRET (restoring context)
+247, 100, CPU Burst
+347, 0, child (PID 1) finished, resuming parent process (PID 0)
+347, 1, switch to kernel mode
+348, 10, context saved
+358, 1, find vector 3 in memory position 0x0006
+359, 1, load address 0X042B into the PC
+360, 25, program is 15Mb large
+385, 15, loader: read 1Mb from disk and write to memory (1/15)
+400, 15, loader: read 1Mb from disk and write to memory (2/15)
+415, 15, loader: read 1Mb from disk and write to memory (3/15)
+430, 15, loader: read 1Mb from disk and write to memory (4/15)
+445, 15, loader: read 1Mb from disk and write to memory (5/15)
+460, 15, loader: read 1Mb from disk and write to memory (6/15)
+475, 15, loader: read 1Mb from disk and write to memory (7/15)
+490, 15, loader: read 1Mb from disk and write to memory (8/15)
+505, 15, loader: read 1Mb from disk and write to memory (9/15)
+520, 15, loader: read 1Mb from disk and write to memory (10/15)
+535, 15, loader: read 1Mb from disk and write to memory (11/15)
+550, 15, loader: read 1Mb from disk and write to memory (12/15)
+565, 15, loader: read 1Mb from disk and write to memory (13/15)
+580, 15, loader: read 1Mb from disk and write to memory (14/15)
+595, 15, loader: read 1Mb from disk and write to memory (15/15)
+610, 3, loader finished: partition 3 occupied: Has 0Mb free
+613, 6, updating PCB
+619, 0, scheduler called
+619, 1, running IRET (restoring context)
+620, 1, switch to kernel mode
+621, 10, context saved
+631, 1, find vector 4 in memory position 0x0008
+632, 1, load address 0X0292 into the PC
+633, 40, running I/O device specific ISR (driver) due to hardware interrupt
+673, 250, IO device busy: CPU polling.....I/O device finished, resuming
+923, 1, running IRET (restoring context)
+924, 0, process terminating (PID 0)
