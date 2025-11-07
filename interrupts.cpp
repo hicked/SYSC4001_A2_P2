@@ -303,10 +303,10 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             // No need to free, already did it above when we modified the PCB
             // Need break since the current trace was replaced with whatever was in exec
 
-        // } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
-        //     // Skip these control flow markers in the main trace loop
-        //     // They are only processed inside the FORK collection logic
-        //     continue;
+        } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
+            // Skip these control flow markers in the main trace loop
+            // They are only processed inside the FORK collection logic
+            continue;
 
         } else {
             // break early instead of continuing
