@@ -33,13 +33,14 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
     std::string execution = "";  //!< string to accumulate the execution output
     std::string system_status = "";  //!< string to accumulate the system status output
     int current_time = time;
-    const int       contextSavResTime =     10; // vary 10, 20, 30
-    const int       ISRActivityTime =       40; // vary 40, 100, 200
+    const int       contextSaveTime =       10;
+    const int       contextResTime =        1;
+    const int       ISRActivityTime =       40;
 
     // Reserve these two numbers of system calls for
     const int       numISRFork =            2;
     const int       numISRExec =            3;
-
+    bool            usedExec =              false;
 
     //parse each line of the input trace file. 'for' loop to keep track of indices.
     for(size_t i = 0; i < trace_file.size(); i++) {
@@ -48,16 +49,14 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
         auto [activity, duration_intr, exec_program_name] = parse_trace(trace);
 
         if(activity == "CPU") { //As per Assignment 1
-            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", CPU Burst\n";
-            current_time += duration_intr;
-
+            execution += createOutputString(current_time, duration_intr, "CPU Burst");
 
         } else if(activity == "SYSCALL") { //As per Assignment 1
             if (duration_intr >= vectors.size()) {
                 execution += createOutputString(current_time, 1, "ERROR: INVALID VECTOR TABLE INDEX: The I/O device specific drivers may be corrupted.");
             }
             else {
-                std::pair<std::string, int> output = intr_boilerplate(current_time, duration_intr, contextSavResTime, vectors);
+                std::pair<std::string, int> output = intr_boilerplate(current_time, duration_intr, contextSaveTime, vectors);
                 execution += output.first;
                 current_time = output.second;
 
@@ -68,23 +67,20 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 // Note: We decided to additionally differentiate between the software and hardware (I/O) ISRs in the output (execution.txt)
                 if (duration_intr < delays.size()) {
                     execution += createOutputString(current_time, ISRActivityTime, "running I/O device specific ISR (driver) due to hardware interrupt");
-                    current_time += ISRActivityTime;
 
                     int IODelay = delays[duration_intr];
 
                     // Printing "." to simulate the CPU polling, or waiting for the I/O device to finish
                     int numDots = (IODelay/50 < 3) ? 3 : IODelay/50;
                     execution += createOutputString(current_time, IODelay, "IO device busy: CPU polling" + std::string(numDots, '.') + "I/O device finished, resuming");
-                    current_time += IODelay;
                 }
                 else {
                     execution += createOutputString(current_time, ISRActivityTime, "running ISR from system call software interrupt");
-                    current_time += ISRActivityTime;
                 }
 
                 // IRET (restoring)
-                execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-                current_time += contextSavResTime;
+                execution += createOutputString(current_time, contextSaveTime, "running IRET (restoring context)");
+
             }
 
 
@@ -94,14 +90,13 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 auto [intr, time] = intr_boilerplate(current_time, duration_intr, 10, vectors);
                 current_time = time;
                 execution += intr;
+
                 execution += createOutputString(current_time, 1, "ending I/O for device " + std::to_string(duration_intr));
-                current_time += 1;
             } else {
                 execution += createOutputString(current_time, 0, "ERROR: INVALID VECTOR INDEX for END_IO");
             }
 
-            execution +=  std::to_string(current_time) + ", 1, IRET\n";
-            current_time += 1;
+            execution +=  createOutputString(current_time, contextResTime, "IRET");
 
 
         } else if(activity == "FORK") {
@@ -154,7 +149,6 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             // Run the FORK ISR (duration provided in trace), copying PCB info to child
             execution += createOutputString(current_time, 20, "running FORK ISR (copying parent PCB to child)");
-            current_time += duration_intr;
 
             // Create child PCB (copy from parent, assign new PID, set PPID)
             // Child needs its own separate memory partition
@@ -164,15 +158,13 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             // Allocate new partition for child
             if (!allocate_memory(&child)) {
                 execution += createOutputString(current_time, 1, "ERROR: FORK failed: no suitable partition for child process");
-                execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-                current_time += contextSavResTime;
+                execution += createOutputString(current_time, contextSaveTime, "running IRET (restoring context)");
                 continue; // Skip this fork and continue with parent
             }
 
             // Simulate copying parent's memory to child's new partition (1 ms per MB)
             for (int copied = 1; copied <= current.size; ++copied) {
                 execution += createOutputString(current_time, 1, "copying parent memory to child partition (" + std::to_string(copied) + "/" + std::to_string(current.size) + " MB)");
-                current_time += 1;
             }
 
             wait_queue.push_back(parent);
@@ -182,8 +174,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += createOutputString(current_time, 0, "scheduler called");
 
             // Return from ISR (IRET/restoring context)
-            execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-            current_time += contextSavResTime;
+            execution += createOutputString(current_time, contextSaveTime, "running IRET (restoring context)");
 
             // System status after FORK: child has higher priority, parent waits
             system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
@@ -208,8 +199,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             current_time = child_end_time;
 
             // After child finishes, restore parent and continue parent's execution
-            execution += createOutputString(current_time, 1, "child finished, resuming parent process (PID " + std::to_string(parent.PID) + ")");
-            current_time += 1;
+            execution += createOutputString(current_time, 0, "child finished, resuming parent process (PID " + std::to_string(parent.PID) + ")");
 
             // Remove parent from wait queue and restore it as current
             if (!wait_queue.empty() && wait_queue.back().PID == parent.PID) {
@@ -220,6 +210,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
         } else if(activity == "EXEC") {
             // EXEC <program name>, <duration>
+            usedExec = true;
 
             auto [intr, time] = intr_boilerplate(current_time, numISRExec, duration_intr, vectors);
             current_time = time;
@@ -235,8 +226,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             }
             if (new_prog_size < 0) {
                 execution += createOutputString(current_time, 1, "ERROR: EXEC failed: program not found: " + exec_program_name);
-                execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-                current_time += contextSavResTime;
+                execution += createOutputString(current_time, contextSaveTime, "running IRET (restoring context)");
                 break;
             }
 
@@ -250,15 +240,13 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             // Allocate new partition
             if (!allocate_memory(&current)) {
                 execution += createOutputString(current_time, 1, "ERROR: EXEC failed: no suitable partition for " + exec_program_name);
-                execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-                current_time += contextSavResTime;
+                execution += createOutputString(current_time, contextSaveTime, "running IRET (restoring context)");
                 break;
             }
 
             // Simulate loader: read+write each MB (1 ms per MB to match delay)
             for (int loaded = 1; loaded <= new_prog_size; ++loaded) {
                 execution += createOutputString(current_time, 15, "loader: read 1MB from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
-                current_time += 15;
             }
 
             // Calculate remaining space for the partition
@@ -269,8 +257,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             execution += createOutputString(current_time, 1, "loader finished: partition " + std::to_string(current.partition_number) + " occupied: Has " + std::to_string(remaining) + "MB free");
             execution += createOutputString(current_time, 0, "scheduler called");
-            execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-            current_time += contextSavResTime;
+            execution += createOutputString(current_time, contextSaveTime, "running IRET (restoring context)");
 
             // System status after EXEC
             system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + "\n";
@@ -310,22 +297,15 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
         } else {
             // break early instead of continuing
-            execution += createOutputString(current_time, 1, "ERROR: INVALID ACTIVITY. ENDING SIMULATION");
-            current_time += 1;
+            execution += createOutputString(current_time, 0, "ERROR: INVALID ACTIVITY");
             break;
         }
     }
 
     // When a process finishes, free its memory
-    // If this is a child process (PPID != -1), the parent may need to be notified
-    if (current.PPID != -1) {
-        // Child process is terminating
-        execution += createOutputString(current_time, 1, "child process (PID " + std::to_string(current.PID) + ") terminating");
-        current_time += 1;
-    } else {
+    if (current.PPID == -1 && !usedExec) {
         // Parent/init process is terminating
-        execution += createOutputString(current_time, 1, "process (PID " + std::to_string(current.PID) + ") terminating");
-        current_time += 1;
+        execution += createOutputString(current_time, 0, "process (PID " + std::to_string(current.PID) + ") terminating");
     }
 
     free_memory(&current); // releasing allocated memory
@@ -379,7 +359,7 @@ int main(int argc, char** argv) {
 }
 
 // Helper function
-std::string createOutputString(unsigned long totalTime, int delay, std::string msg) {
+std::string createOutputString(int& totalTime, int delay, std::string msg) {
     std::string output = "";
     output += std::to_string(totalTime);
     output += ", ";
@@ -387,5 +367,6 @@ std::string createOutputString(unsigned long totalTime, int delay, std::string m
     output += ", ";
     output += msg;
     output += "\n";
+    totalTime += delay;
     return output;
 }

@@ -368,7 +368,7 @@ unsigned int get_size(std::string name, std::vector<external_file> external_file
     return size;
 }
 
-std::string createOutputString( unsigned long totalTime,
+std::string createOutputString( int& totalTime,
                                 int delay,
                                 std::string msg);
 
