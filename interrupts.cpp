@@ -114,36 +114,6 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += intr;
             current_time = time;
 
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            //Add your FORK output here
-
-            // Run the FORK ISR (duration provided in trace), copying PCB info to child
-            execution += createOutputString(current_time, 20, "running FORK ISR (copying parent PCB to child)");
-            current_time += duration_intr;
-
-            // Create child PCB (copy from parent, assign new PID, set PPID)
-            // NO NEED TO SEARCH FOR EMPTY PARTITION SINCE IT SHARES WITH PARENT
-            // I would double check the fields of the struct tho, not sure if it's right
-            PCB child(current.PID+1, current.PID, current.program_name, current.size, current.partition_number);
-
-            // Call scheduler (for now just print a message)
-            execution += createOutputString(current_time, 0, "scheduler called");
-
-            // Return from ISR (IRET/restoring context)
-            execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
-            current_time += contextSavResTime;
-
-            // System status after FORK: child has higher priority, parent waits
-            system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
-            std::vector<PCB> display_wait = wait_queue;
-            display_wait.push_back(current); // parent is waiting while child runs
-            system_status += print_PCB(child, display_wait);
-            system_status += "\n";
-            // Also show the global wait queue explicitly
-            system_status += print_wait_queue(wait_queue);
-
-            ///////////////////////////////////////////////////////////////////////////////////////////
-
             //The following loop helps you do 2 things:
             // * Collect the trace of the chile (and only the child, skip parent)
             // * Get the index of where the parent is supposed to start executing from
@@ -185,8 +155,45 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             // In the global trace file, skip to after the child and parent stuff
             i = parent_index;
 
-            // With the child's trace, run the child (recursively). Start at the current time.
-            // Pass a wait queue that includes the parent so snapshots inside the child show parent waiting
+            // Run the FORK ISR (duration provided in trace), copying PCB info to child
+            execution += createOutputString(current_time, 20, "running FORK ISR (copying parent PCB to child)");
+            current_time += duration_intr;
+
+            // Create child PCB (copy from parent, assign new PID, set PPID)
+            // Child needs its own separate memory partition
+            PCB parent = current; // Save parent before creating child
+            PCB child(current.PID+1, current.PID, current.program_name, current.size, -1); // partition not assigned yet
+
+            // Allocate new partition for child
+            if (!allocate_memory(&child)) {
+                execution += createOutputString(current_time, 1, "ERROR: FORK failed: no suitable partition for child process");
+                execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
+                current_time += contextSavResTime;
+                continue; // Skip this fork and continue with parent
+            }
+
+            // Simulate copying parent's memory to child's new partition (1 ms per MB)
+            for (int copied = 1; copied <= current.size; ++copied) {
+                execution += createOutputString(current_time, 1, "copying parent memory to child partition (" + std::to_string(copied) + "/" + std::to_string(current.size) + " MB)");
+                current_time += 1;
+            }
+
+            wait_queue.push_back(parent);
+            current = child;
+
+            // Call scheduler (for now just print a message)
+            execution += createOutputString(current_time, 0, "scheduler called");
+
+            // Return from ISR (IRET/restoring context)
+            execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
+            current_time += contextSavResTime;
+
+            // System status after FORK: child has higher priority, parent waits
+            system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
+            std::vector<PCB> parent_waiting = {parent}; // Show only the parent waiting
+            system_status += print_PCB(current, parent_waiting);
+            system_status += "\n";
+
             std::vector<PCB> wait_queue_for_child = wait_queue;
             auto [child_execution, child_status, child_end_time] = simulate_trace(
                 child_trace,
@@ -198,12 +205,20 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 wait_queue
             );
 
-            // Append child's output to overall execution log
+            // Append child to overall execution log
             execution += child_execution;
-            // Also append child's system status snapshots
             system_status += child_status;
-            // Advance time to when the child finished
             current_time = child_end_time;
+
+            // After child finishes, restore parent and continue parent's execution
+            execution += createOutputString(current_time, 1, "child finished, resuming parent process (PID " + std::to_string(parent.PID) + ")");
+            current_time += 1;
+
+            // Remove parent from wait queue and restore it as current
+            if (!wait_queue.empty() && wait_queue.back().PID == parent.PID) {
+                wait_queue.pop_back();
+            }
+            current = parent;
 
 
         } else if(activity == "EXEC") {
@@ -212,9 +227,6 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             auto [intr, time] = intr_boilerplate(current_time, numISRExec, duration_intr, vectors);
             current_time = time;
             execution += intr;
-
-            ///////////////////////////////////////////////////////////////////////////////////////////
-            //Add your EXEC output here
 
             // Look up file size in external_files list
             int new_prog_size = -1;
@@ -228,12 +240,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 execution += createOutputString(current_time, 1, "ERROR: EXEC failed: program not found: " + exec_program_name);
                 execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
                 current_time += contextSavResTime;
-                // Snapshot failure
-                system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + " (FAILED: not found)\n";
-                system_status += print_PCB(current, wait_queue);
-                system_status += "\n";
-                system_status += print_wait_queue(wait_queue);
-                break; // proceed with rest of trace
+                break;
             }
 
             // Free current partition
@@ -248,29 +255,22 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 execution += createOutputString(current_time, 1, "ERROR: EXEC failed: no suitable partition for " + exec_program_name);
                 execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
                 current_time += contextSavResTime;
-                wait_queue.push_back(current);
-
-                // Snapshot failure to allocate as well
-                system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + " (FAILED: no partition)\n";
-                system_status += print_PCB(current, wait_queue);
-                system_status += "\n";
-                system_status += print_wait_queue(wait_queue);
-
-                continue;
+                break;
             }
 
             // Simulate loader: read+write each MB (1 ms per MB to match delay)
             for (int loaded = 1; loaded <= new_prog_size; ++loaded) {
                 execution += createOutputString(current_time, 15, "loader: read 1MB from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
-                current_time += 1;
+                current_time += 15;
             }
 
+            // Calculate remaining space for the partition
             int remaining = 0;
             if (current.partition_number >= 1) {
-                remaining = static_cast<int>(memory[current.partition_number - 1].size) - new_prog_size;
-                if (remaining < 0) remaining = 0;
+                remaining = (int)(memory[current.partition_number - 1].size) - new_prog_size;
             }
-            execution += createOutputString(current_time, 1, "loader finished: partition " + std::to_string(current.partition_number) + " has " + std::to_string(remaining) + "MB free");
+
+            execution += createOutputString(current_time, 1, "loader finished: partition " + std::to_string(current.partition_number) + " occupied: Has " + std::to_string(remaining) + "MB free");
             execution += createOutputString(current_time, 0, "scheduler called");
             execution += createOutputString(current_time, contextSavResTime, "running IRET (restoring context)");
             current_time += contextSavResTime;
@@ -279,11 +279,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + "\n";
             system_status += print_PCB(current, wait_queue);
             system_status += "\n";
-            system_status += print_wait_queue(wait_queue);
 
-            ///////////////////////////////////////////////////////////////////////////////////////////
-
-
+            // This should therefore work with recursive execs, not just once at top level
             std::ifstream exec_trace_file(exec_program_name + ".txt");
 
             std::vector<std::string> exec_traces;
@@ -292,7 +289,6 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 exec_traces.push_back(exec_trace);
             }
 
-            ///////////////////////////////////////////////////////////////////////////////////////////
             //With the exec's trace (i.e. trace of external program), run the exec recursively
             auto [exec_execution, exec_status, exec_end_time] = simulate_trace(
                 exec_traces,
@@ -306,16 +302,14 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += exec_execution;
             system_status += exec_status;
 
-            ///////////////////////////////////////////////////////////////////////////////////////////
-
             break; //Why is this important? (answer in report)
             // No need to free, already did it above when we modified the PCB
             // Need break since the current trace was replaced with whatever was in exec
 
-        } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
-            // Skip these control flow markers in the main trace loop
-            // They are only processed inside the FORK collection logic
-            continue;
+        // } else if(activity == "IF_CHILD" || activity == "IF_PARENT" || activity == "ENDIF") {
+        //     // Skip these control flow markers in the main trace loop
+        //     // They are only processed inside the FORK collection logic
+        //     continue;
 
         } else {
             // break early instead of continuing
@@ -324,19 +318,23 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             break;
         }
     }
+
+    // When a process finishes, free its memory
+    // If this is a child process (PPID != -1), the parent may need to be notified
+    if (current.PPID != -1) {
+        // Child process is terminating
+        execution += createOutputString(current_time, 1, "child process (PID " + std::to_string(current.PID) + ") terminating");
+        current_time += 1;
+    } else {
+        // Parent/init process is terminating
+        execution += createOutputString(current_time, 1, "process (PID " + std::to_string(current.PID) + ") terminating");
+        current_time += 1;
+    }
+
     free_memory(&current); // releasing allocated memory
-
-    // see if anything in the queue
-    // for (int i = 0; i<wait_queue.size(); i++) {
-    //     if (allocate_memory(&wait_queue[i])) {
-    //         // allocate the memory,
-    //         // run the new trace associated with the process
-    //         // remove from wait queue
-    //     }
-    // }
-
     return {execution, system_status, current_time};
 }
+
 
 int main(int argc, char** argv) {
 
@@ -359,11 +357,6 @@ int main(int argc, char** argv) {
     }
 
     std::vector<PCB> wait_queue;
-
-    /******************ADD YOUR VARIABLES HERE*************************/
-
-
-    /******************************************************************/
 
     //Converting the trace file into a vector of strings.
     std::vector<std::string> trace_file;
