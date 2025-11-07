@@ -37,6 +37,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
     const int       contextResTime =        1;
     const int       ISRActivityTime =       40;
 
+    const int       storageDeviceSpeed =    15;
+
     // Reserve these two numbers of system calls for
     const int       numISRFork =            2;
     const int       numISRExec =            3;
@@ -60,11 +62,6 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 execution += output.first;
                 current_time = output.second;
 
-                // If there is no delay in device table, we assume that the ISR isn't for an I/O device, and is a regular system call
-                // We are assuming there is no low level paralism yet, and therefore the CPU will hang until the I/O devce is finished
-                // This is why, for now, we print "polling..." until the device is done before continuing
-                // In the future (assignment 2), we will use an interupt schedule to allow for low level parallelism
-                // Note: We decided to additionally differentiate between the software and hardware (I/O) ISRs in the output (execution.txt)
                 if (duration_intr < delays.size()) {
                     execution += createOutputString(current_time, ISRActivityTime, "running I/O device specific ISR (driver) due to hardware interrupt");
 
@@ -173,8 +170,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             current = child;
 
             system_status += "time: " + std::to_string(current_time) + "; current trace: FORK, " + std::to_string(duration_intr) + "\n";
-            std::vector<PCB> parent_waiting = {parent}; // Show only the parent waiting
-            system_status += print_PCB(current, parent_waiting);
+            system_status += print_PCB(current, wait_queue);
             system_status += "\n";
 
             auto [child_execution, child_status, child_end_time] = simulate_trace(
@@ -242,7 +238,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             // Simulate loader: read+write each MB (1 ms per MB to match delay)
             for (int loaded = 1; loaded <= new_prog_size; ++loaded) {
-                execution += createOutputString(current_time, 15, "loader: read 1Mb from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
+                execution += createOutputString(current_time, storageDeviceSpeed, "loader: read 1Mb from disk and write to memory (" + std::to_string(loaded) + "/" + std::to_string(new_prog_size) + ")");
             }
 
             // Calculate remaining space for the partition
@@ -258,6 +254,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             // System status after EXEC
             system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + exec_program_name + ", " + std::to_string(duration_intr) + "\n";
+            // Maintain visibility of any processes already waiting (e.g., original parent PID 0)
             system_status += print_PCB(current, wait_queue);
             system_status += "\n";
 

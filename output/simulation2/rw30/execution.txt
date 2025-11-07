@@ -1,0 +1,87 @@
+0, 1, switch to kernel mode
+1, 10, context saved
+11, 1, find vector 2 in memory position 0x0004
+12, 1, load address 0X0695 into the PC
+13, 17, cloning the PCB and loading child into memory (PID: 1)
+30, 0, scheduler called
+30, 1, running IRET (restoring context)
+31, 1, switch to kernel mode
+32, 10, context saved
+42, 1, find vector 3 in memory position 0x0006
+43, 1, load address 0X042B into the PC
+44, 16, program is 10Mb large
+60, 30, loader: read 1Mb from disk and write to memory (1/10)
+90, 30, loader: read 1Mb from disk and write to memory (2/10)
+120, 30, loader: read 1Mb from disk and write to memory (3/10)
+150, 30, loader: read 1Mb from disk and write to memory (4/10)
+180, 30, loader: read 1Mb from disk and write to memory (5/10)
+210, 30, loader: read 1Mb from disk and write to memory (6/10)
+240, 30, loader: read 1Mb from disk and write to memory (7/10)
+270, 30, loader: read 1Mb from disk and write to memory (8/10)
+300, 30, loader: read 1Mb from disk and write to memory (9/10)
+330, 30, loader: read 1Mb from disk and write to memory (10/10)
+360, 3, loader finished: partition 4 occupied: Has 0Mb free
+363, 6, updating PCB
+369, 0, scheduler called
+369, 1, running IRET (restoring context)
+370, 1, switch to kernel mode
+371, 10, context saved
+381, 1, find vector 2 in memory position 0x0004
+382, 1, load address 0X0695 into the PC
+383, 15, cloning the PCB and loading child into memory (PID: 2)
+398, 0, scheduler called
+398, 1, running IRET (restoring context)
+399, 1, switch to kernel mode
+400, 10, context saved
+410, 1, find vector 3 in memory position 0x0006
+411, 1, load address 0X042B into the PC
+412, 33, program is 15Mb large
+445, 30, loader: read 1Mb from disk and write to memory (1/15)
+475, 30, loader: read 1Mb from disk and write to memory (2/15)
+505, 30, loader: read 1Mb from disk and write to memory (3/15)
+535, 30, loader: read 1Mb from disk and write to memory (4/15)
+565, 30, loader: read 1Mb from disk and write to memory (5/15)
+595, 30, loader: read 1Mb from disk and write to memory (6/15)
+625, 30, loader: read 1Mb from disk and write to memory (7/15)
+655, 30, loader: read 1Mb from disk and write to memory (8/15)
+685, 30, loader: read 1Mb from disk and write to memory (9/15)
+715, 30, loader: read 1Mb from disk and write to memory (10/15)
+745, 30, loader: read 1Mb from disk and write to memory (11/15)
+775, 30, loader: read 1Mb from disk and write to memory (12/15)
+805, 30, loader: read 1Mb from disk and write to memory (13/15)
+835, 30, loader: read 1Mb from disk and write to memory (14/15)
+865, 30, loader: read 1Mb from disk and write to memory (15/15)
+895, 3, loader finished: partition 3 occupied: Has 0Mb free
+898, 6, updating PCB
+904, 0, scheduler called
+904, 1, running IRET (restoring context)
+905, 53, CPU Burst
+958, 0, child (PID 2) finished, resuming parent process (PID 1)
+958, 1, switch to kernel mode
+959, 10, context saved
+969, 1, find vector 3 in memory position 0x0006
+970, 1, load address 0X042B into the PC
+971, 33, program is 15Mb large
+1004, 30, loader: read 1Mb from disk and write to memory (1/15)
+1034, 30, loader: read 1Mb from disk and write to memory (2/15)
+1064, 30, loader: read 1Mb from disk and write to memory (3/15)
+1094, 30, loader: read 1Mb from disk and write to memory (4/15)
+1124, 30, loader: read 1Mb from disk and write to memory (5/15)
+1154, 30, loader: read 1Mb from disk and write to memory (6/15)
+1184, 30, loader: read 1Mb from disk and write to memory (7/15)
+1214, 30, loader: read 1Mb from disk and write to memory (8/15)
+1244, 30, loader: read 1Mb from disk and write to memory (9/15)
+1274, 30, loader: read 1Mb from disk and write to memory (10/15)
+1304, 30, loader: read 1Mb from disk and write to memory (11/15)
+1334, 30, loader: read 1Mb from disk and write to memory (12/15)
+1364, 30, loader: read 1Mb from disk and write to memory (13/15)
+1394, 30, loader: read 1Mb from disk and write to memory (14/15)
+1424, 30, loader: read 1Mb from disk and write to memory (15/15)
+1454, 3, loader finished: partition 3 occupied: Has 0Mb free
+1457, 6, updating PCB
+1463, 0, scheduler called
+1463, 1, running IRET (restoring context)
+1464, 53, CPU Burst
+1517, 0, child (PID 1) finished, resuming parent process (PID 0)
+1517, 205, CPU Burst
+1722, 0, process terminating (PID 0)
