@@ -207,7 +207,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             int new_prog_size = -1;
             for (const external_file& file : external_files) {
                 if (file.program_name == exec_program_name) {
-                    new_prog_size = (int)(file.size); // could have overflow errors here but hopefully not
+                    new_prog_size = (int)(file.size);
                     break;
                 }
             }
