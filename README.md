@@ -59,7 +59,7 @@ The `output/` directory contains multiple test scenarios:
 
 ### Build & Run
 ```bash
-./build.sh           # Compile the simulator
+./build.sh                        # Compile the simulator
 ./buildnrun.sh <trace_file.txt>   # Build and run with a trace file
 ```
 
