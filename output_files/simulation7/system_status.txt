@@ -1,0 +1,100 @@
+time: 24; current trace: FORK, 10
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   1 |        init |               5 |    1 | running |
+|   0 |        init |               6 |    1 | waiting |
++------------------------------------------------------+
+
+time: 127; current trace: EXEC trace7, 5
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   1 |      trace7 |               5 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
++------------------------------------------------------+
+
+time: 151; current trace: FORK, 10
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   2 |      trace7 |               4 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
++------------------------------------------------------+
+
+time: 254; current trace: EXEC trace7, 5
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   2 |      trace7 |               4 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
++------------------------------------------------------+
+
+time: 278; current trace: FORK, 10
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   3 |      trace7 |               3 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
+|   2 |      trace7 |               4 |    5 | waiting |
++------------------------------------------------------+
+
+time: 381; current trace: EXEC trace7, 5
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   3 |      trace7 |               3 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
+|   2 |      trace7 |               4 |    5 | waiting |
++------------------------------------------------------+
+
+time: 405; current trace: FORK, 10
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   4 |      trace7 |               2 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
+|   2 |      trace7 |               4 |    5 | waiting |
+|   3 |      trace7 |               3 |    5 | waiting |
++------------------------------------------------------+
+
+time: 508; current trace: EXEC trace7, 5
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   4 |      trace7 |               2 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
+|   2 |      trace7 |               4 |    5 | waiting |
+|   3 |      trace7 |               3 |    5 | waiting |
++------------------------------------------------------+
+
+time: 532; current trace: FORK, 10
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   5 |      trace7 |               1 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
+|   2 |      trace7 |               4 |    5 | waiting |
+|   3 |      trace7 |               3 |    5 | waiting |
+|   4 |      trace7 |               2 |    5 | waiting |
++------------------------------------------------------+
+
+time: 635; current trace: EXEC trace7, 5
++------------------------------------------------------+
+| PID |program name |partition number | size |   state |
++------------------------------------------------------+
+|   5 |      trace7 |               1 |    5 | running |
+|   0 |        init |               6 |    1 | waiting |
+|   1 |      trace7 |               5 |    5 | waiting |
+|   2 |      trace7 |               4 |    5 | waiting |
+|   3 |      trace7 |               3 |    5 | waiting |
+|   4 |      trace7 |               2 |    5 | waiting |
++------------------------------------------------------+
+

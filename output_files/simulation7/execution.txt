@@ -1,0 +1,124 @@
+0, 1, switch to kernel mode
+1, 10, context saved
+11, 1, find vector 2 in memory position 0x0004
+12, 1, load address 0X0695 into the PC
+13, 10, cloning the PCB and loading child into memory (PID: 1)
+23, 0, scheduler called
+23, 1, running IRET (restoring context)
+24, 1, switch to kernel mode
+25, 10, context saved
+35, 1, find vector 3 in memory position 0x0006
+36, 1, load address 0X042B into the PC
+37, 5, program is 5Mb large
+42, 15, loader: read 1Mb from disk and write to memory (1/5)
+57, 15, loader: read 1Mb from disk and write to memory (2/5)
+72, 15, loader: read 1Mb from disk and write to memory (3/5)
+87, 15, loader: read 1Mb from disk and write to memory (4/5)
+102, 15, loader: read 1Mb from disk and write to memory (5/5)
+117, 3, loader finished: partition 5 occupied: Has 3Mb free
+120, 6, updating PCB
+126, 0, scheduler called
+126, 1, running IRET (restoring context)
+127, 1, switch to kernel mode
+128, 10, context saved
+138, 1, find vector 2 in memory position 0x0004
+139, 1, load address 0X0695 into the PC
+140, 10, cloning the PCB and loading child into memory (PID: 2)
+150, 0, scheduler called
+150, 1, running IRET (restoring context)
+151, 1, switch to kernel mode
+152, 10, context saved
+162, 1, find vector 3 in memory position 0x0006
+163, 1, load address 0X042B into the PC
+164, 5, program is 5Mb large
+169, 15, loader: read 1Mb from disk and write to memory (1/5)
+184, 15, loader: read 1Mb from disk and write to memory (2/5)
+199, 15, loader: read 1Mb from disk and write to memory (3/5)
+214, 15, loader: read 1Mb from disk and write to memory (4/5)
+229, 15, loader: read 1Mb from disk and write to memory (5/5)
+244, 3, loader finished: partition 4 occupied: Has 5Mb free
+247, 6, updating PCB
+253, 0, scheduler called
+253, 1, running IRET (restoring context)
+254, 1, switch to kernel mode
+255, 10, context saved
+265, 1, find vector 2 in memory position 0x0004
+266, 1, load address 0X0695 into the PC
+267, 10, cloning the PCB and loading child into memory (PID: 3)
+277, 0, scheduler called
+277, 1, running IRET (restoring context)
+278, 1, switch to kernel mode
+279, 10, context saved
+289, 1, find vector 3 in memory position 0x0006
+290, 1, load address 0X042B into the PC
+291, 5, program is 5Mb large
+296, 15, loader: read 1Mb from disk and write to memory (1/5)
+311, 15, loader: read 1Mb from disk and write to memory (2/5)
+326, 15, loader: read 1Mb from disk and write to memory (3/5)
+341, 15, loader: read 1Mb from disk and write to memory (4/5)
+356, 15, loader: read 1Mb from disk and write to memory (5/5)
+371, 3, loader finished: partition 3 occupied: Has 10Mb free
+374, 6, updating PCB
+380, 0, scheduler called
+380, 1, running IRET (restoring context)
+381, 1, switch to kernel mode
+382, 10, context saved
+392, 1, find vector 2 in memory position 0x0004
+393, 1, load address 0X0695 into the PC
+394, 10, cloning the PCB and loading child into memory (PID: 4)
+404, 0, scheduler called
+404, 1, running IRET (restoring context)
+405, 1, switch to kernel mode
+406, 10, context saved
+416, 1, find vector 3 in memory position 0x0006
+417, 1, load address 0X042B into the PC
+418, 5, program is 5Mb large
+423, 15, loader: read 1Mb from disk and write to memory (1/5)
+438, 15, loader: read 1Mb from disk and write to memory (2/5)
+453, 15, loader: read 1Mb from disk and write to memory (3/5)
+468, 15, loader: read 1Mb from disk and write to memory (4/5)
+483, 15, loader: read 1Mb from disk and write to memory (5/5)
+498, 3, loader finished: partition 2 occupied: Has 20Mb free
+501, 6, updating PCB
+507, 0, scheduler called
+507, 1, running IRET (restoring context)
+508, 1, switch to kernel mode
+509, 10, context saved
+519, 1, find vector 2 in memory position 0x0004
+520, 1, load address 0X0695 into the PC
+521, 10, cloning the PCB and loading child into memory (PID: 5)
+531, 0, scheduler called
+531, 1, running IRET (restoring context)
+532, 1, switch to kernel mode
+533, 10, context saved
+543, 1, find vector 3 in memory position 0x0006
+544, 1, load address 0X042B into the PC
+545, 5, program is 5Mb large
+550, 15, loader: read 1Mb from disk and write to memory (1/5)
+565, 15, loader: read 1Mb from disk and write to memory (2/5)
+580, 15, loader: read 1Mb from disk and write to memory (3/5)
+595, 15, loader: read 1Mb from disk and write to memory (4/5)
+610, 15, loader: read 1Mb from disk and write to memory (5/5)
+625, 3, loader finished: partition 1 occupied: Has 35Mb free
+628, 6, updating PCB
+634, 0, scheduler called
+634, 1, running IRET (restoring context)
+635, 1, switch to kernel mode
+636, 10, context saved
+646, 1, find vector 2 in memory position 0x0004
+647, 1, load address 0X0695 into the PC
+648, 10, cloning the PCB and loading child into memory (PID: 6)
+658, 0, ERROR: FORK failed: no suitable partition for child process
+658, 1, running IRET (restoring context)
+659, 100, CPU Burst
+759, 0, child (PID 5) finished, resuming parent process (PID 4)
+759, 100, CPU Burst
+859, 0, child (PID 4) finished, resuming parent process (PID 3)
+859, 100, CPU Burst
+959, 0, child (PID 3) finished, resuming parent process (PID 2)
+959, 100, CPU Burst
+1059, 0, child (PID 2) finished, resuming parent process (PID 1)
+1059, 100, CPU Burst
+1159, 0, child (PID 1) finished, resuming parent process (PID 0)
+1159, 100, CPU Burst
+1259, 0, process terminating (PID 0)

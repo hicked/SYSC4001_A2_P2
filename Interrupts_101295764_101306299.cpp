@@ -1,14 +1,11 @@
-// ASSUMPTIONS PLEASE CONFIRM ENZO
-// . THEIR ALLOCATE IS ONE PROCESS PER PARTITION (UNLESS CALLING FORK)... I DON'T THINK THAT'S HOW IT'S SUPPOSED TO WORK BUT
-
 /**
  *
- * @file interrupts.cpp
- * @author Sasisekhar Govind
+ * @file Interrupts_101295764_101306299.cpp
+ * @author Antoine Hickey 101295764 & Enzo Chen 101306299
  *
  */
 
-#include<interrupts.hpp>
+#include<interrupts_101295764_101306299.hpp>
 
 // Helper to print a compact view of the wait queue (processes waiting for memory)
 static std::string print_wait_queue(const std::vector<PCB>& wait_queue) {
